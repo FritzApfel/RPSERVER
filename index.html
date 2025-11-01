@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minecraft Handy GUI</title>
+<style>
+  body {
+    background: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: sans-serif;
+  }
+
+  .phone {
+    width: 200px;
+    height: 400px;
+    background: linear-gradient(to bottom, #222, #111);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .status-bar {
+    height: 25px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .apps {
+    display: grid;
+    grid-template-columns: repeat(3, 50px);
+    grid-gap: 10px;
+    padding: 20px;
+    justify-content: center;
+  }
+
+  .app {
+    width: 50px;
+    height: 50px;
+    background: #666;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 10px;
+    cursor: pointer;
+  }
+
+  /* Anrufbildschirm */
+  .call-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    display: none;
+  }
+
+  .call-screen.active {
+    display: flex;
+  }
+
+  .call-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .hangup {
+    background: red;
+    color: white;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <!-- Statusleiste -->
+  <div class="status-bar">
+    <span>12:45</span>
+    <span>🔋100%</span>
+  </div>
+
+  <!-- Homescreen Apps -->
+  <div class="apps">
+    <div class="app" onclick="startCall('Spieler1')">📞</div>
+    <div class="app">💬</div>
+    <div class="app">🗺️</div>
+    <div class="app">📷</div>
+    <div class="app">🎵</div>
+    <div class="app">⚙️</div>
+  </div>
+
+  <!-- Telefon-Bildschirm -->
+  <div id="callScreen" class="call-screen">
+    <h2>Telefonieren mit:</h2>
+    <h3 id="callTarget">Spieler1</h3>
+    <button class="call-button hangup" onclick="endCall()">Auflegen</button>
+  </div>
+</div>
+
+<script>
+  const callScreen = document.getElementById('callScreen');
+  const callTargetEl = document.getElementById('callTarget');
+
+  function startCall(playerName) {
+    callTargetEl.textContent = playerName;
+    callScreen.classList.add('active');
+  }
+
+  function endCall() {
+    callScreen.classList.remove('active');
+  }
+</script>
+
+</body>
+</html>
