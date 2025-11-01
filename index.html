@@ -63,6 +63,7 @@ body {
     cursor: pointer;
     box-shadow: 2px 2px 6px rgba(0,0,0,0.5), inset -1px -1px 3px rgba(255,255,255,0.1);
     transition: all 0.2s;
+    position: relative;
 }
 
 .app:hover {
@@ -70,7 +71,19 @@ body {
     box-shadow: 2px 4px 10px rgba(0,0,0,0.6), inset -1px -1px 3px rgba(255,255,255,0.15);
 }
 
-/* Screens (Telefon, Messages, Karte, Einstellungen) */
+/* Optional kleine 3D-Style: leicht abgerundeter Lichtschein */
+.app::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 54px;
+    height: 54px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+}
+
+/* Screens (Telefon, Chat, Map, Kontakte, Einstellungen) */
 .screen {
     position: absolute;
     top: 8px;
@@ -81,27 +94,67 @@ body {
     border-radius: 22px;
     display: none;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    padding: 30px;
+    padding: 20px;
     box-sizing: border-box;
     color: #fff;
     text-align: center;
 }
 
-.screen.active {
-    display: flex;
-}
-
-.screen h2 {
-    margin-bottom: 20px;
+/* Realistischer Telefon-Screen */
+#callScreen h2 {
+    margin-top: 30px;
+    margin-bottom: 10px;
     font-size: 20px;
 }
+#callScreen h3 {
+    margin-bottom: 30px;
+    font-size: 18px;
+}
+.timer {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
 
-/* Buttons */
-.call-button {
+/* Chat-App */
+.chat-container {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.chat-input {
+    width: 100%;
+    display: flex;
+    margin-top: 10px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 10px 0 0 10px;
+    border: none;
+    font-size: 14px;
+}
+
+.chat-input button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 0 10px 10px 0;
+    background: #4a90e2;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Buttons für andere Screens */
+.screen button {
     margin-top: 20px;
-    padding: 12px 30px;
+    padding: 12px 25px;
     border: none;
     border-radius: 15px;
     cursor: pointer;
@@ -113,7 +166,7 @@ body {
     transition: all 0.2s;
 }
 
-.call-button:hover {
+.screen button:hover {
     transform: translateY(-2px);
     box-shadow: 3px 3px 8px rgba(0,0,0,0.7);
 }
@@ -126,66 +179,112 @@ body {
     <!-- Apps -->
     <div class="apps">
       <div class="app" onclick="startCall('Spieler1')">📞</div>
-      <div class="app" onclick="openMessages()">💬</div>
+      <div class="app" onclick="openChat()">💬</div>
       <div class="app" onclick="openMap()">🗺️</div>
+      <div class="app" onclick="openContacts()">👥</div>
       <div class="app" onclick="openSettings()">⚙️</div>
     </div>
   </div>
 
-  <!-- Telefon-Screen -->
+  <!-- Telefon -->
   <div id="callScreen" class="screen">
     <h2>Telefonieren mit:</h2>
     <h3 id="callTarget">Spieler1</h3>
-    <button class="call-button" onclick="endCall()">Auflegen</button>
+    <div class="timer" id="callTimer">00:00</div>
+    <button onclick="endCall()">Auflegen</button>
   </div>
 
-  <!-- Messages -->
-  <div id="msgScreen" class="screen">
-    <h2>Messages</h2>
-    <button class="call-button" onclick="closeMessages()">Zurück</button>
+  <!-- Chat -->
+  <div id="chatScreen" class="screen">
+    <h2>Chat</h2>
+    <div class="chat-container">
+      <div class="chat-input">
+        <input type="text" placeholder="Nachricht schreiben...">
+        <button>Senden</button>
+      </div>
+    </div>
+    <button onclick="closeChat()">Zurück</button>
   </div>
 
-  <!-- Karte -->
+  <!-- Map -->
   <div id="mapScreen" class="screen">
     <h2>Karte</h2>
-    <button class="call-button" onclick="closeMap()">Zurück</button>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/World_map_blank_without_borders.svg/320px-World_map_blank_without_borders.svg.png" alt="Test Map" style="width:100%; border-radius:12px; margin-top:10px;">
+    <button onclick="closeMap()">Zurück</button>
+  </div>
+
+  <!-- Kontakte -->
+  <div id="contactsScreen" class="screen">
+    <h2>Kontakte</h2>
+    <p>Keine Kontakte vorhanden</p>
+    <button onclick="closeContacts()">Zurück</button>
   </div>
 
   <!-- Einstellungen -->
   <div id="settingsScreen" class="screen">
     <h2>Einstellungen</h2>
-    <button class="call-button" onclick="closeSettings()">Zurück</button>
+    <button onclick="closeSettings()">Zurück</button>
   </div>
 </div>
 
 <script>
 const callScreen = document.getElementById('callScreen');
 const callTargetEl = document.getElementById('callTarget');
+const callTimerEl = document.getElementById('callTimer');
 const homeScreen = document.getElementById('homeScreen');
-const msgScreen = document.getElementById('msgScreen');
+const chatScreen = document.getElementById('chatScreen');
 const mapScreen = document.getElementById('mapScreen');
+const contactsScreen = document.getElementById('contactsScreen');
 const settingsScreen = document.getElementById('settingsScreen');
+
+let timerInterval;
 
 function hideAllScreens() {
     callScreen.classList.remove('active');
-    msgScreen.classList.remove('active');
+    chatScreen.classList.remove('active');
     mapScreen.classList.remove('active');
+    contactsScreen.classList.remove('active');
     settingsScreen.classList.remove('active');
     homeScreen.style.display = 'flex';
+    clearInterval(timerInterval);
+    callTimerEl.textContent = "00:00";
 }
 
+// Telefon
 function startCall(playerName) {
     callTargetEl.textContent = playerName;
     callScreen.classList.add('active');
     homeScreen.style.display = 'none';
+    startCallTimer();
 }
 
 function endCall() { hideAllScreens(); }
-function openMessages() { msgScreen.classList.add('active'); homeScreen.style.display = 'none'; }
-function closeMessages() { hideAllScreens(); }
-function openMap() { mapScreen.classList.add('active'); homeScreen.style.display = 'none'; }
+
+// Timer Funktion
+function startCallTimer() {
+    let seconds = 0;
+    timerInterval = setInterval(() => {
+        seconds++;
+        let mins = String(Math.floor(seconds/60)).padStart(2,'0');
+        let secs = String(seconds % 60).padStart(2,'0');
+        callTimerEl.textContent = `${mins}:${secs}`;
+    },1000);
+}
+
+// Chat
+function openChat() { chatScreen.classList.add('active'); homeScreen.style.display='none'; }
+function closeChat() { hideAllScreens(); }
+
+// Map
+function openMap() { mapScreen.classList.add('active'); homeScreen.style.display='none'; }
 function closeMap() { hideAllScreens(); }
-function openSettings() { settingsScreen.classList.add('active'); homeScreen.style.display = 'none'; }
+
+// Kontakte
+function openContacts() { contactsScreen.classList.add('active'); homeScreen.style.display='none'; }
+function closeContacts() { hideAllScreens(); }
+
+// Einstellungen
+function openSettings() { settingsScreen.classList.add('active'); homeScreen.style.display='none'; }
 function closeSettings() { hideAllScreens(); }
 </script>
 
