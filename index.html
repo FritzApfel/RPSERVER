@@ -6,32 +6,48 @@
 <title>Sunrise Handy GUI</title>
 <style>
 body {
-    background: #2c2c2c;
+    background: #222;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Handygehäuse */
 .phone {
     width: 240px;
     height: 440px;
-    background: linear-gradient(160deg, #FF8C42, #FFB347, #FFD76B); /* Sunrise Farbverlauf */
+    background: #000; /* schwarzer Rahmen */
     border-radius: 30px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 0 15px rgba(255,255,255,0.1);
+    padding: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     position: relative;
     overflow: hidden;
-    padding: 20px;
 }
 
+/* Bildschirm */
+.screen-inner {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(160deg, #FF8C42, #FFB347, #FFD76B); /* Sunrise-Farbverlauf */
+    border-radius: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Apps auf Homescreen */
 .apps {
     display: grid;
     grid-template-columns: repeat(3, 60px);
     grid-gap: 15px;
     justify-content: center;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .app {
@@ -42,32 +58,35 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 28px;
     color: #fff;
-    font-size: 24px;
     cursor: pointer;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.3), inset -1px -1px 3px rgba(255,255,255,0.1);
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.5), inset -1px -1px 3px rgba(255,255,255,0.1);
     transition: all 0.2s;
 }
 
 .app:hover {
     transform: translateY(-3px);
-    box-shadow: 2px 4px 8px rgba(0,0,0,0.5), inset -1px -1px 3px rgba(255,255,255,0.15);
+    box-shadow: 2px 4px 10px rgba(0,0,0,0.6), inset -1px -1px 3px rgba(255,255,255,0.15);
 }
 
+/* Screens (Telefon, Messages, Karte, Einstellungen) */
 .screen {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(160deg, #FF8C42, #FFB347, #FFD76B); /* Sunrise Farbverlauf */
-    color: #fff;
+    top: 8px;
+    left: 8px;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+    background: linear-gradient(160deg, #FF8C42, #FFB347, #FFD76B);
+    border-radius: 22px;
     display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 30px;
-    border-radius: 30px;
+    box-sizing: border-box;
+    color: #fff;
+    text-align: center;
 }
 
 .screen.active {
@@ -77,9 +96,9 @@ body {
 .screen h2 {
     margin-bottom: 20px;
     font-size: 20px;
-    letter-spacing: 1px;
 }
 
+/* Buttons */
 .call-button {
     margin-top: 20px;
     padding: 12px 30px;
@@ -103,12 +122,14 @@ body {
 <body>
 
 <div class="phone">
-  <!-- Homescreen -->
-  <div class="apps" id="homeScreen">
-    <div class="app" onclick="startCall('Spieler1')">📞</div>
-    <div class="app" onclick="openMessages()">💬</div>
-    <div class="app" onclick="openMap()">🗺️</div>
-    <div class="app" onclick="openSettings()">⚙️</div>
+  <div class="screen-inner" id="homeScreen">
+    <!-- Apps -->
+    <div class="apps">
+      <div class="app" onclick="startCall('Spieler1')">📞</div>
+      <div class="app" onclick="openMessages()">💬</div>
+      <div class="app" onclick="openMap()">🗺️</div>
+      <div class="app" onclick="openSettings()">⚙️</div>
+    </div>
   </div>
 
   <!-- Telefon-Screen -->
@@ -118,24 +139,23 @@ body {
     <button class="call-button" onclick="endCall()">Auflegen</button>
   </div>
 
-  <!-- Messages-Screen -->
+  <!-- Messages -->
   <div id="msgScreen" class="screen">
     <h2>Messages</h2>
     <button class="call-button" onclick="closeMessages()">Zurück</button>
   </div>
 
-  <!-- Karte-Screen -->
+  <!-- Karte -->
   <div id="mapScreen" class="screen">
     <h2>Karte</h2>
     <button class="call-button" onclick="closeMap()">Zurück</button>
   </div>
 
-  <!-- Einstellungen-Screen -->
+  <!-- Einstellungen -->
   <div id="settingsScreen" class="screen">
     <h2>Einstellungen</h2>
     <button class="call-button" onclick="closeSettings()">Zurück</button>
   </div>
-
 </div>
 
 <script>
@@ -151,7 +171,7 @@ function hideAllScreens() {
     msgScreen.classList.remove('active');
     mapScreen.classList.remove('active');
     settingsScreen.classList.remove('active');
-    homeScreen.style.display = 'grid';
+    homeScreen.style.display = 'flex';
 }
 
 function startCall(playerName) {
