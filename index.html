@@ -15,120 +15,184 @@
   }
 
   .phone {
-    width: 200px;
-    height: 400px;
+    width: 220px;
+    height: 420px;
     background: linear-gradient(to bottom, #222, #111);
-    border-radius: 20px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    border-radius: 25px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.9);
     position: relative;
     overflow: hidden;
   }
 
-  .status-bar {
-    height: 25px;
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 8px;
-    font-size: 12px;
-  }
-
   .apps {
     display: grid;
-    grid-template-columns: repeat(3, 50px);
-    grid-gap: 10px;
+    grid-template-columns: repeat(3, 60px);
+    grid-gap: 12px;
     padding: 20px;
     justify-content: center;
   }
 
   .app {
-    width: 50px;
-    height: 50px;
-    background: #666;
-    border-radius: 8px;
+    width: 60px;
+    height: 60px;
+    background: #555;
+    border-radius: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 10px;
+    font-size: 18px;
     cursor: pointer;
+    transition: 0.2s;
   }
 
-  /* Anrufbildschirm */
-  .call-screen {
+  .app:hover {
+    background: #777;
+  }
+
+  /* Screens */
+  .screen {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: #111;
-    display: flex;
+    color: #fff;
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: #fff;
-    display: none;
+    padding: 20px;
   }
 
-  .call-screen.active {
+  .screen.active {
     display: flex;
+  }
+
+  .screen h2 {
+    margin-bottom: 20px;
   }
 
   .call-button {
     margin-top: 20px;
-    padding: 10px 20px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    background: red;
+    color: white;
+    font-size: 16px;
+  }
+
+  .msg-button {
+    margin-top: 10px;
+    padding: 8px 20px;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
+    background: #4a90e2;
+    color: white;
+    font-size: 14px;
   }
 
-  .hangup {
-    background: red;
-    color: white;
-  }
 </style>
 </head>
 <body>
 
 <div class="phone">
-  <!-- Statusleiste -->
-  <div class="status-bar">
-    <span>12:45</span>
-    <span>🔋100%</span>
-  </div>
-
-  <!-- Homescreen Apps -->
-  <div class="apps">
+  <!-- Homescreen -->
+  <div class="apps" id="homeScreen">
     <div class="app" onclick="startCall('Spieler1')">📞</div>
-    <div class="app">💬</div>
-    <div class="app">🗺️</div>
-    <div class="app">📷</div>
+    <div class="app" onclick="openMessages()">💬</div>
+    <div class="app" onclick="openMap()">🗺️</div>
+    <div class="app" onclick="openSettings()">⚙️</div>
     <div class="app">🎵</div>
-    <div class="app">⚙️</div>
   </div>
 
-  <!-- Telefon-Bildschirm -->
-  <div id="callScreen" class="call-screen">
+  <!-- Telefon-Screen -->
+  <div id="callScreen" class="screen">
     <h2>Telefonieren mit:</h2>
     <h3 id="callTarget">Spieler1</h3>
-    <button class="call-button hangup" onclick="endCall()">Auflegen</button>
+    <button class="call-button" onclick="endCall()">Auflegen</button>
   </div>
+
+  <!-- Nachrichten-Screen -->
+  <div id="msgScreen" class="screen">
+    <h2>Messages</h2>
+    <p>Hier kannst du Schatten hinterlassen...</p>
+    <button class="call-button" onclick="closeMessages()">Zurück</button>
+  </div>
+
+  <!-- Karte-Screen -->
+  <div id="mapScreen" class="screen">
+    <h2>Karte</h2>
+    <p>Hier wird deine Karte angezeigt.</p>
+    <button class="call-button" onclick="closeMap()">Zurück</button>
+  </div>
+
+  <!-- Einstellungen-Screen -->
+  <div id="settingsScreen" class="screen">
+    <h2>Einstellungen</h2>
+    <p>Optionen hier...</p>
+    <button class="call-button" onclick="closeSettings()">Zurück</button>
+  </div>
+
 </div>
 
 <script>
   const callScreen = document.getElementById('callScreen');
   const callTargetEl = document.getElementById('callTarget');
+  const homeScreen = document.getElementById('homeScreen');
+  const msgScreen = document.getElementById('msgScreen');
+  const mapScreen = document.getElementById('mapScreen');
+  const settingsScreen = document.getElementById('settingsScreen');
+
+  function hideAllScreens() {
+    callScreen.classList.remove('active');
+    msgScreen.classList.remove('active');
+    mapScreen.classList.remove('active');
+    settingsScreen.classList.remove('active');
+    homeScreen.style.display = 'grid';
+  }
 
   function startCall(playerName) {
     callTargetEl.textContent = playerName;
     callScreen.classList.add('active');
+    homeScreen.style.display = 'none';
   }
 
   function endCall() {
-    callScreen.classList.remove('active');
+    hideAllScreens();
+  }
+
+  function openMessages() {
+    msgScreen.classList.add('active');
+    homeScreen.style.display = 'none';
+  }
+
+  function closeMessages() {
+    hideAllScreens();
+  }
+
+  function openMap() {
+    mapScreen.classList.add('active');
+    homeScreen.style.display = 'none';
+  }
+
+  function closeMap() {
+    hideAllScreens();
+  }
+
+  function openSettings() {
+    settingsScreen.classList.add('active');
+    homeScreen.style.display = 'none';
+  }
+
+  function closeSettings() {
+    hideAllScreens();
   }
 </script>
 
